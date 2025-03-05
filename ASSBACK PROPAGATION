@@ -1,0 +1,91 @@
+import numpy as np
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+    
+i1, i2, b1, b2 = 0.05, 0.10, 0.35, 0.60
+w1, w2, w3, w4, w5, w6, w7, w8 = 0.15, 0.20, 0.25, 0.30, 0.40, 0.45, 0.50, 0.55
+
+net_h1 = (i1 * w1) + (i2 * w2) + b1
+out_h1 = sigmoid(net_h1)
+
+net_h2 = (i1 * w3) + (i2 * w4) + b1
+out_h2 = sigmoid(net_h2)
+
+net_o1 = (out_h1 * w5) + (out_h2 * w6) + b2
+out_o1 = sigmoid(net_o1)
+
+net_o2 = (out_h1 * w7) + (out_h2 * w8) + b2
+out_o2 = sigmoid(net_o2)
+
+target_o1, target_o2 = 0.01, 0.99
+
+Eo1 = 0.5 * (target_o1 - out_o1)**2
+Eo2 = 0.5 * (target_o2 - out_o2)**2
+E_total = Eo1 + Eo2
+
+dE_total_out_o1 = -(target_o1 - out_o1)
+d_out_o1_net_o1 = sigmoid_derivative(out_o1)
+d_net_o1_w5 = out_h1
+
+dE_total_w5 = dE_total_out_o1 * d_out_o1_net_o1 * d_net_o1_w5
+
+d_net_o1_w6 = out_h2
+dE_total_w6 = dE_total_out_o1 * d_out_o1_net_o1 * d_net_o1_w6
+
+dE_total_out_o2 = -(target_o2 - out_o2)
+d_out_o2_net_o2 = sigmoid_derivative(out_o2)
+
+d_net_o2_w7 = out_h1
+dE_total_w7 = dE_total_out_o2 * d_out_o2_net_o2 * d_net_o2_w7
+
+d_net_o2_w8 = out_h2
+dE_total_w8 = dE_total_out_o2 * d_out_o2_net_o2 * d_net_o2_w8
+
+d_net_o1_out_h1 = w5
+d_net_o2_out_h1 = w7
+
+dE_total_out_h1 = (dE_total_out_o1 * d_out_o1_net_o1 * d_net_o1_out_h1) + (dE_total_out_o2 * d_out_o2_net_o2 * d_net_o2_out_h1)
+d_out_h1_net_h1 = sigmoid_derivative(out_h1)
+
+d_net_h1_w1 = i1
+d_net_h1_w2 = i2
+
+dE_total_w1 = dE_total_out_h1 * d_out_h1_net_h1 * d_net_h1_w1
+dE_total_w2 = dE_total_out_h1 * d_out_h1_net_h1 * d_net_h1_w2
+
+d_net_o1_out_h2 = w6
+d_net_o2_out_h2 = w8
+
+dE_total_out_h2 = (dE_total_out_o1 * d_out_o1_net_o1 * d_net_o1_out_h2) + (dE_total_out_o2 * d_out_o2_net_o2 * d_net_o2_out_h2)
+d_out_h2_net_h2 = sigmoid_derivative(out_h2)
+
+d_net_h2_w3 = i1
+d_net_h2_w4 = i2
+
+dE_total_w3 = dE_total_out_h2 * d_out_h2_net_h2 * d_net_h2_w3
+dE_total_w4 = dE_total_out_h2 * d_out_h2_net_h2 * d_net_h2_w4
+
+eta = 0.5  
+
+w1 -= eta * dE_total_w1
+w2 -= eta * dE_total_w2
+w3 -= eta * dE_total_w3
+w4 -= eta * dE_total_w4
+w5 -= eta * dE_total_w5
+w6 -= eta * dE_total_w6
+w7 -= eta * dE_total_w7
+w8 -= eta * dE_total_w8
+
+print(f"w1 = {w1:.4f}")
+print(f"w2 = {w2:.4f}")
+print(f"w3 = {w3:.4f}")
+print(f"w4 = {w4:.4f}")
+print(f"w5 = {w5:.4f}")
+print(f"w6 = {w6:.4f}")
+print(f"w7 = {w7:.4f}")
+print(f"w8 = {w8:.4f}")
+print(f"Total Error = {E_total:.4f}")
